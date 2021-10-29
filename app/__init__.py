@@ -1,14 +1,13 @@
-from flask import Flask
+from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 import os
 from dotenv import load_dotenv
-
+from werkzeug.exceptions import NotFound, BadRequest
 
 db = SQLAlchemy()
 migrate = Migrate()
 load_dotenv()
-
 
 def create_app(test_config=None):
     app = Flask(__name__)
@@ -30,5 +29,7 @@ def create_app(test_config=None):
     migrate.init_app(app, db)
 
     # Register Blueprints here
+    from .routes import tasks_bp
+    app.register_blueprint(tasks_bp)
 
     return app
