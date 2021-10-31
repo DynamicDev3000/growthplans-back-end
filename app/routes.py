@@ -2,6 +2,9 @@ from app import db
 from flask import Blueprint, jsonify, request
 from app.models.task import Task
 from functools import wraps
+from datetime import datetime
+import os
+from dotenv import load_dotenv
 
 tasks_bp = Blueprint("tasks", __name__, url_prefix="/tasks")
 
@@ -62,16 +65,6 @@ def put(task):
 
     return jsonify({"task": task.to_dict()}), 200
 
-@tasks_bp.route("/<task_id>/<mark_complete>", methods=["PATCH"])
-@require_task
-def patch(task):
-    form_data = request.get_json()
-
-    task.update_from_dict(form_data)
-
-    db.session.commit()
-
-    return jsonify({"task": task.to_dict()}), 200
 
 @tasks_bp.route("/<task_id>", methods=["DELETE"])
 @require_task
@@ -79,3 +72,29 @@ def delete(task):
     db.session.delete(task)
     db.session.commit()
     return jsonify ({"details": (f"Task {task.id} \"{task.title}\" successfully deleted")}), 200
+
+@tasks_bp.route("/<task_id>/mark_complete", methods=["PATCH"])
+@require_task
+def complete_patch(task):
+    request.get_json()
+
+    task.completed_at = datetime.utcnow()
+
+    db.session.commit()
+
+    return jsonify({"task": task.to_dict()}), 200
+
+@tasks_bp.route("/<task_id>/mark_incomplete", methods=["PATCH"])
+@require_task
+def incomplete_patch(task):
+    request.get_json()
+
+    task.completed_at = None
+
+    db.session.commit()
+
+    load_dotenv()
+
+
+
+    return jsonify({"task": task.to_dict()}), 200

@@ -1,5 +1,6 @@
 # from flask import current_app
 from app import db
+from datetime import datetime
 
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -22,7 +23,7 @@ class Task(db.Model):
         columns = set(cls.COLUMNS)
         filtered = {k:v for k, v in values.items() if k in columns}
         return cls(**filtered)
-
+    #for regular patch
     def update_from_dict(self, values):
         for column in self.COLUMNS:
             if column in values:
