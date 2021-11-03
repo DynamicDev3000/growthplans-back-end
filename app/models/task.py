@@ -7,12 +7,21 @@ class Task(db.Model):
     title = db.Column(db.String)
     description = db.Column(db.String)
     completed_at = db.Column(db.DateTime)
+    goal_id = db.Column(db.Integer, db.ForeignKey('goal.id'),nullable=True)
 
     COLUMNS = ["title", "description", "completed_at"]
     
     def to_dict(self):
         return {
             "id" : self.id,
+            "title" : self.title,
+            "description" : self.description,
+            "is_complete" : self.completed_at is not None
+        }
+    def task_to_dict_w_goal(self):      
+        return {
+            "id" : self.id,
+            "goal_id": self.goal_id,
             "title" : self.title,
             "description" : self.description,
             "is_complete" : self.completed_at is not None

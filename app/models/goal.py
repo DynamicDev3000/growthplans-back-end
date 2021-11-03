@@ -1,9 +1,10 @@
-from flask import current_app
+from flask import current_app, jsonify
 from app import db
 
 class Goal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String)
+    tasks = db.relationship("Task", backref="goal", lazy=True)
 
     COLUMNS = ["title"]
     
@@ -13,6 +14,12 @@ class Goal(db.Model):
             "title" : self.title,
         }
 
+    def goal_task_dict(self):
+        return {
+            "id" : self.id,
+            "title" : self.title,
+            "tasks" : [task.task_to_dict_w_goal() for task in self.tasks]
+        }
     @classmethod
     def from_dict(cls, values):
         columns = set(cls.COLUMNS)

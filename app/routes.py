@@ -33,25 +33,25 @@ def require_goal(endpoint):
         return endpoint(*args, goal=goal, **kwargs)
     return fgn
 
-@tasks_bp.route("", methods=["GET"])
-def get_tasks():
-    sort_query = request.args.get("sort")
-    if sort_query == "desc":
-        tasks = Task.query.order_by(Task.title.desc())
-    elif sort_query == "asc":
-        tasks = Task.query.order_by(Task.title.asc())
-    
-    else:
-        tasks = Task.query.all()
-    
-    tasks_response = [task.to_dict() for task in tasks]
-    return jsonify(tasks_response), 200
+@goals_bp.route("/<goal_id>/tasks", methods=["POST"])
+@require_goal
+def post_tasked_goals(goal):
+    request_body = request.get_json()
 
-@goals_bp.route("", methods=["GET"])
-def get_goals():
-    goals = Goal.query.all()
-    goal_response = [goal.to_dict() for goal in goals]
-    return jsonify(goal_response), 200
+    all_tasks = []
+    for task_id in request_body["task_ids"]:
+        all_tasks.append(Task.query.get(task_id))
+
+    goal.tasks = all_tasks
+
+    db.session.commit()
+
+    new_response = {
+    "id": goal.id,
+    "task_ids": request_body["task_ids"]
+    }
+
+    return jsonify(new_response), 200
 
 @goals_bp.route("", methods=["POST"])
 def post_goals():
@@ -85,6 +85,27 @@ def post():
 
     return jsonify({"task" : new_task.to_dict()}), 201
 
+@tasks_bp.route("", methods=["GET"])
+def get_tasks():
+    sort_query = request.args.get("sort")
+    if sort_query == "desc":
+        tasks = Task.query.order_by(Task.title.desc())
+    elif sort_query == "asc":
+        tasks = Task.query.order_by(Task.title.asc())
+    else:
+        tasks = Task.query.all()
+    
+    tasks_response = [task.to_dict() for task in tasks]
+
+    return jsonify(tasks_response), 200
+
+@goals_bp.route("", methods=["GET"])
+def get_goals():
+    goals = Goal.query.all()
+    goal_response = [goal.to_dict() for goal in goals]
+
+    return jsonify(goal_response), 200
+
 @goals_bp.route("/<goal_id>", methods=["GET"])
 @require_goal
 def get(goal):  
@@ -93,7 +114,14 @@ def get(goal):
 @tasks_bp.route("/<task_id>", methods=["GET"])
 @require_task
 def get(task):  
+    if task.goal_id:
+        return jsonify({"task": task.task_to_dict_w_goal()}), 200
     return jsonify({"task": task.to_dict()}), 200
+
+@goals_bp.route("/<goal_id>/tasks", methods=["GET"])
+@require_goal
+def get_tasked_goal(goal):
+    return jsonify(goal.goal_task_dict()), 200
 
 @goals_bp.route("/<goal_id>", methods=["PUT"])
 @require_goal
