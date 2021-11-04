@@ -33,6 +33,10 @@ def require_goal(endpoint):
         return endpoint(*args, goal=goal, **kwargs)
     return fgn
 
+@goals_bp.route("/gittest", methods =["GET"])
+def gitstuff():
+    return jsonify("it worked!")
+
 @goals_bp.route("/<goal_id>/tasks", methods=["POST"])
 @require_goal
 def post_tasked_goals(goal):
