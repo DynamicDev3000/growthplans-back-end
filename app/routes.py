@@ -85,8 +85,7 @@ def post():
 
     return jsonify({"task" : new_task.to_dict()}), 201
 
-@tasks_bp.route("", methods=["GET"])
-def get_tasks():
+def sort_filter_tasks():
     sort_query = request.args.get("sort")
     if sort_query == "desc":
         tasks = Task.query.order_by(Task.title.desc())
@@ -95,13 +94,39 @@ def get_tasks():
     else:
         tasks = Task.query.all()
     
+    filter_query = request.args.get("title")
+    if filter_query:
+        tasks = Task.query.filter(Task.title.contains(filter_query))
+    
+    return tasks
+
+@tasks_bp.route("", methods=["GET"])
+def get_tasks():
+    tasks = sort_filter_tasks()
+
     tasks_response = [task.to_dict() for task in tasks]
 
     return jsonify(tasks_response), 200
 
+def sort_filter_goals():
+    sort_query = request.args.get("sort")
+    if sort_query == "desc":
+        goals = Goal.query.order_by(Goal.title.desc())
+    elif sort_query == "asc":
+        goals = Goal.query.order_by(Goal.title.asc())
+    else:
+        goals = Goal.query.all()
+
+    filter_query = request.args.get("title")
+    if filter_query:
+        goals = Goal.query.filter(Goal.title.contains(filter_query))
+    
+    return goals
+
 @goals_bp.route("", methods=["GET"])
 def get_goals():
-    goals = Goal.query.all()
+    goals = sort_filter_goals()
+
     goal_response = [goal.to_dict() for goal in goals]
 
     return jsonify(goal_response), 200
