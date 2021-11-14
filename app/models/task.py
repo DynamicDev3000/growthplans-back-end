@@ -15,7 +15,7 @@ class Task(db.Model):
         return {
             "id" : self.id,
             "title" : self.title,
-            "description" : self.description,
+            "description" : self.description    ,
             "is_complete" : self.completed_at is not None
         }
     def task_to_dict_w_goal(self):      
