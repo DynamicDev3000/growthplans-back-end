@@ -105,17 +105,17 @@ def get(goal):
 def get_tasked_goal(goal):
     return jsonify(goal.goal_task_dict()), 200
 
-#patch request to edit goals
-# @goals_bp.route("/<goal_id>", methods=["PUT"])
-# @require_goal
-# def put(goal):
-#     form_data = request.get_json()
+#patch request to edit goals - works tested
+@goals_bp.route("/<goal_id>", methods=["PATCH"])
+@require_goal
+def patch_goal(goal):
+    request_body = request.get_json()
 
-#     goal.replace_with_dict(form_data)
+    goal.title = request_body["title"]
 
-#     db.session.commit()
+    db.session.commit()
 
-#     return jsonify({"goal": goal.to_dict()}), 200
+    return jsonify({"updated title": goal.title}), 200
 
 #patch request to edit subtasks
 #works tested with request in this format
@@ -124,7 +124,7 @@ def get_tasked_goal(goal):
 @goals_bp.route("/<goal_id>/<task_id>", methods=["PATCH"])
 @require_goal
 @require_task
-def put(goal, task):
+def patch_task(goal, task):
     request_body = request.get_json()
 
     task.description = request_body["description"]
@@ -132,6 +132,34 @@ def put(goal, task):
     db.session.commit()
 
     return jsonify({"updated description": task.description}), 200
+
+@goals_bp.route("/<goal_id>/<task_id>/mark_complete", methods=["PATCH"])
+@require_goal
+@require_task
+def complete_patch(task, goal):
+    request.get_json()
+
+    task.completed_at = datetime.utcnow()
+    
+    #check if all tasks are completed for that goal and if true complete goal
+    if all(task.completed_at for task in goal.tasks):
+        goal.goal_completed_at = datetime.utcnow()
+
+    db.session.commit()
+
+    return jsonify({"task": task.to_dict()}), 200
+
+@goals_bp.route("/<goal_id>/<task_id>/mark_incomplete", methods=["PATCH"])
+@require_goal
+@require_task
+def incomplete_patch(task, goal):
+    request.get_json()
+
+    task.completed_at = None
+
+    db.session.commit()
+
+    return jsonify({"task": task.to_dict()}), 200
 
 #delete tasks under goal
 #works tested
@@ -150,25 +178,3 @@ def delete(goal):
     db.session.delete(goal)
     db.session.commit()
     return jsonify ({"details": (f"Goal {goal.title} successfully deleted")}), 200
-
-@tasks_bp.route("/<task_id>/mark_complete", methods=["PATCH"])
-@require_task
-def complete_patch(task):
-    request.get_json()
-
-    task.completed_at = datetime.date()
-
-    db.session.commit()
-
-    return jsonify({"task": task.to_dict()}), 200
-
-@tasks_bp.route("/<task_id>/mark_incomplete", methods=["PATCH"])
-@require_task
-def incomplete_patch(task):
-    request.get_json()
-
-    task.completed_at = None
-
-    db.session.commit()
-
-    return jsonify({"task": task.to_dict()}), 200

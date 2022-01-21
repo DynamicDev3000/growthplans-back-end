@@ -9,6 +9,7 @@ class Goal(db.Model):
 ##big why reflection? #foreen obstacles, tools to overcome them
     difficulty = db.Column(db.Integer)
     tasks = db.relationship("Task", backref="goal", lazy=True)
+    goal_completed_at = db.Column(db.DateTime)
 
     COLUMNS = ["title", "due_date", "why", "difficulty"]
     
@@ -16,6 +17,7 @@ class Goal(db.Model):
         return {
             "id" : self.id,
             "title" : self.title,
+            "is_goal_completed" : self.goal_completed_at is not None
         }
 
     def goal_task_dict(self):
