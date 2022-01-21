@@ -33,100 +33,58 @@ def require_goal(endpoint):
         return endpoint(*args, goal=goal, **kwargs)
     return fgn
 
-@goals_bp.route("/gittest", methods =["GET"])
-def gitstuff():
-    return jsonify("it worked!")
-
-@goals_bp.route("/<goal_id>/tasks", methods=["POST"])
-@require_goal
-def post_tasked_goals(goal):
-    request_body = request.get_json()
-
-    all_tasks = []
-    for task_id in request_body["task_ids"]:
-        all_tasks.append(Task.query.get(task_id))
-
-    goal.tasks = all_tasks
-
-    db.session.commit()
-
-    new_response = {
-    "id": goal.id,
-    "task_ids": request_body["task_ids"]
-    }
-
-    return jsonify(new_response), 200
-
+#create goal, tasks and attaches them to goal
 @goals_bp.route("", methods=["POST"])
-def post_goals():
+def post_tasked_goals():
     request_body = request.get_json()
 
-    new_goal = Goal.from_dict(request_body)
+    new_goal = Goal.from_dict(request_body["goal"])
 
-    if "title" not in request_body:
+    if "title" not in request_body["goal"]:
         return ({
         "details": "Invalid data"
     }), 400
 
     db.session.add(new_goal)
-    db.session.commit()
 
-    return jsonify({"goal" : new_goal.to_dict()}), 201
-
-@tasks_bp.route("", methods=["POST"])
-def post():
-    request_body = request.get_json()
-
-    new_task = Task.from_dict(request_body)
-
-    if "title" not in request_body or "description" not in request_body or "completed_at" not in request_body:
+    if "tasks" not in request_body:
         return ({
         "details": "Invalid data"
     }), 400
 
-    db.session.add(new_task)
+    new_tasks = []
+    for task in request_body["tasks"]:
+        new_task = Task.from_dict(task)
+        new_tasks.append(new_task)
+    
+    new_goal.tasks = new_tasks
+
+    db.session.add_all(new_tasks)
     db.session.commit()
 
-    return jsonify({"task" : new_task.to_dict()}), 201
+    new_response = {
+    "id": new_goal.id,
+    "title": new_goal.title,
+    "tasks": [task.task_to_dict_w_goal() for task in new_goal.tasks]
+    }
 
-def sort_filter_tasks():
-    sort_query = request.args.get("sort")
-    if sort_query == "desc":
-        tasks = Task.query.order_by(Task.title.desc())
-    elif sort_query == "asc":
-        tasks = Task.query.order_by(Task.title.asc())
-    else:
-        tasks = Task.query.all()
-    
-    filter_query = request.args.get("title")
-    if filter_query:
-        tasks = Task.query.filter(Task.title.contains(filter_query))
-    
-    return tasks
-
-@tasks_bp.route("", methods=["GET"])
-def get_tasks():
-    tasks = sort_filter_tasks()
-
-    tasks_response = [task.to_dict() for task in tasks]
-
-    return jsonify(tasks_response), 200
+    return jsonify(new_response), 200
 
 def sort_filter_goals():
     sort_query = request.args.get("sort")
     if sort_query == "desc":
-        goals = Goal.query.order_by(Goal.title.desc())
+        goals = Goal.query.order_by(Goal.due_date.desc())
     elif sort_query == "asc":
-        goals = Goal.query.order_by(Goal.title.asc())
+        goals = Goal.query.order_by(Goal.due_date.asc())
     else:
         goals = Goal.query.all()
 
-    filter_query = request.args.get("title")
+    filter_query = request.args.get("due_date")
     if filter_query:
-        goals = Goal.query.filter(Goal.title.contains(filter_query))
+        goals = Goal.query.filter(Goal.due_date.contains(filter_query))
     
     return goals
-
+#tested - works
 @goals_bp.route("", methods=["GET"])
 def get_goals():
     goals = sort_filter_goals()
@@ -135,23 +93,19 @@ def get_goals():
 
     return jsonify(goal_response), 200
 
+#tested - works
 @goals_bp.route("/<goal_id>", methods=["GET"])
 @require_goal
 def get(goal):  
     return jsonify({"goal": goal.to_dict()}), 200
 
-@tasks_bp.route("/<task_id>", methods=["GET"])
-@require_task
-def get(task):  
-    if task.goal_id:
-        return jsonify({"task": task.task_to_dict_w_goal()}), 200
-    return jsonify({"task": task.to_dict()}), 200
-
+#tested - works
 @goals_bp.route("/<goal_id>/tasks", methods=["GET"])
 @require_goal
 def get_tasked_goal(goal):
     return jsonify(goal.goal_task_dict()), 200
 
+#patch request to edit subtasks
 @goals_bp.route("/<goal_id>", methods=["PUT"])
 @require_goal
 def put(goal):
@@ -193,17 +147,9 @@ def delete(task):
 def complete_patch(task):
     request.get_json()
 
-    task.completed_at = datetime.utcnow()
+    task.completed_at = datetime.date()
 
     db.session.commit()
-
-    load_dotenv()
-
-    data = {"token": os.environ.get("SLACK_TOKEN"), 
-                "channel": os.environ.get("CHANNEL_ID"), 
-                "text": f"Someone just completed the task {task.title}"}
-    url = os.environ.get("SLACK_URL")
-    requests.post(url, data)
 
     return jsonify({"task": task.to_dict()}), 200
 

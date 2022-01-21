@@ -4,9 +4,13 @@ from app import db
 class Goal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String)
+    due_date = db.Column(db.DateTime)
+    why = db.Column(db.String)
+##big why reflection? #foreen obstacles, tools to overcome them
+    difficulty = db.Column(db.Integer)
     tasks = db.relationship("Task", backref="goal", lazy=True)
 
-    COLUMNS = ["title"]
+    COLUMNS = ["title", "due_date", "why", "difficulty"]
     
     def to_dict(self):
         return {
