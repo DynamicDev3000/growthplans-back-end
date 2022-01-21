@@ -105,42 +105,51 @@ def get(goal):
 def get_tasked_goal(goal):
     return jsonify(goal.goal_task_dict()), 200
 
+#patch request to edit goals
+# @goals_bp.route("/<goal_id>", methods=["PUT"])
+# @require_goal
+# def put(goal):
+#     form_data = request.get_json()
+
+#     goal.replace_with_dict(form_data)
+
+#     db.session.commit()
+
+#     return jsonify({"goal": goal.to_dict()}), 200
+
 #patch request to edit subtasks
-@goals_bp.route("/<goal_id>", methods=["PUT"])
+#works tested with request in this format
+# {   "description" : "Youtube 3"
+# }
+@goals_bp.route("/<goal_id>/<task_id>", methods=["PATCH"])
 @require_goal
-def put(goal):
-    form_data = request.get_json()
-
-    goal.replace_with_dict(form_data)
-
-    db.session.commit()
-
-    return jsonify({"goal": goal.to_dict()}), 200
-
-@tasks_bp.route("/<task_id>", methods=["PUT"])
 @require_task
-def put(task):
-    form_data = request.get_json()
+def put(goal, task):
+    request_body = request.get_json()
 
-    task.replace_with_dict(form_data)
+    task.description = request_body["description"]
 
     db.session.commit()
 
-    return jsonify({"task": task.to_dict()}), 200
+    return jsonify({"updated description": task.description}), 200
 
+#delete tasks under goal
+#works tested
+@goals_bp.route("/<goal_id>/<task_id>", methods=["DELETE"])
+@require_goal
+@require_task
+def delete_task_w_goal(goal, task):
+    db.session.delete(task)
+    db.session.commit()
+    return jsonify ({"details": (f"Task {task.description} successfully deleted")}), 200
+
+#works tested
 @goals_bp.route("/<goal_id>", methods=["DELETE"])
 @require_goal
 def delete(goal):
     db.session.delete(goal)
     db.session.commit()
-    return jsonify ({"details": (f"Goal {goal.id} \"{goal.title}\" successfully deleted")}), 200
-
-@tasks_bp.route("/<task_id>", methods=["DELETE"])
-@require_task
-def delete(task):
-    db.session.delete(task)
-    db.session.commit()
-    return jsonify ({"details": (f"Task {task.id} \"{task.title}\" successfully deleted")}), 200
+    return jsonify ({"details": (f"Goal {goal.title} successfully deleted")}), 200
 
 @tasks_bp.route("/<task_id>/mark_complete", methods=["PATCH"])
 @require_task
