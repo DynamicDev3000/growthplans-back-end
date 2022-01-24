@@ -71,19 +71,23 @@ def post_tasked_goals():
     return jsonify(new_response), 200
 
 def sort_filter_goals():
-    sort_query = request.args.get("sort")
-    if sort_query == "desc":
-        goals = Goal.query.order_by(Goal.due_date.desc())
-    elif sort_query == "asc":
-        goals = Goal.query.order_by(Goal.due_date.asc())
+    sort_filter = request.args.get("sort")
+    if sort_filter == "desc":
+        goal_query = Goal.query.order_by(Goal.due_date.desc())
+    elif sort_filter == "asc":
+        goal_query = Goal.query.order_by(Goal.due_date.asc())
     else:
-        goals = Goal.query.all()
+        goal_query = Goal.query
 
-    filter_query = request.args.get("due_date")
-    if filter_query:
-        goals = Goal.query.filter(Goal.due_date.contains(filter_query))
+#localhost:5000/goals?is_goal_completed=true
+    completed_filter = request.args.get("is_goal_completed")
+    if completed_filter == "true":
+        goal_query = goal_query.filter(Goal.goal_completed_at.isnot(None)) 
     
-    return goals
+    return goal_query.all()
+
+#get goals completed = true
+
 #tested - works
 @goals_bp.route("", methods=["GET"])
 def get_goals():
