@@ -12,7 +12,7 @@ import requests
 
 tasks_bp = Blueprint("tasks", __name__, url_prefix="/tasks")
 goals_bp = Blueprint("goals", __name__, url_prefix="/goals")
-users_bp = Blueprint("users", __name__, url_prefix="/users")
+# users_bp = Blueprint("users", __name__, url_prefix="/users")
 
 def require_task(endpoint):
     @wraps(endpoint)
