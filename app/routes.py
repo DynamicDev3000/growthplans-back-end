@@ -1,9 +1,7 @@
 from app import db
 from flask import Blueprint, jsonify, request, render_template
-
 from app.models.goal import Goal
 from app.models.task import Task
-from app.models.user import User
 from functools import wraps
 from datetime import datetime
 import os
@@ -12,7 +10,6 @@ import requests
 
 tasks_bp = Blueprint("tasks", __name__, url_prefix="/tasks")
 goals_bp = Blueprint("goals", __name__, url_prefix="/goals")
-# users_bp = Blueprint("users", __name__, url_prefix="/users")
 
 def require_task(endpoint):
     @wraps(endpoint)
@@ -35,10 +32,6 @@ def require_goal(endpoint):
         
         return endpoint(*args, goal=goal, **kwargs)
     return fgn
-
-# @users_bp.route("/", methods=["GET", "POST"])
-# def registration():
-    
 
 #create goal, tasks and attaches them to goal
 @goals_bp.route("", methods=["POST"])
