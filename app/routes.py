@@ -93,7 +93,7 @@ def sort_filter_goals():
 def get_goals():
     goals = sort_filter_goals()
 
-    goal_response = [goal.to_dict() for goal in goals]
+    goal_response = [goal.goal_task_dict() for goal in goals]
 
     return jsonify(goal_response), 200
 

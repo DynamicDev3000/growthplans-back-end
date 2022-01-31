@@ -23,6 +23,7 @@ class Goal(db.Model):
         return {
             "id" : self.id,
             "title" : self.title,
+            "is_goal_completed" : self.goal_completed_at is not None,
             "tasks" : [task.task_to_dict_w_goal() for task in self.tasks]
         }
     @classmethod
