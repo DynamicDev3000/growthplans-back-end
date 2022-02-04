@@ -40,17 +40,17 @@ def post_tasked_goals():
 
     new_goal = Goal.from_dict(request_body["goal"])
 
-    if "title" not in request_body["goal"]:
-        return ({
-        "details": "Invalid data"
-    }), 400
+    # if "title" not in request_body["goal"]:
+    #     return ({
+    #     "details": "Invalid data"
+    # }), 400
 
-    db.session.add(new_goal)
+    # db.session.add(new_goal)
 
-    if "tasks" not in request_body:
-        return ({
-        "details": "Invalid data"
-    }), 400
+    # if "tasks" not in request_body:
+    #     return ({
+    #     "details": "Invalid data"
+    # }), 400
 
     new_tasks = []
     for task in request_body["tasks"]:
