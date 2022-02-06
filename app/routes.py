@@ -49,7 +49,7 @@ def post_tasked_goals():
     # }), 400
 
     new_tasks = []
-    for task in request_body["tasks"]:
+    for task in request_body[goal["tasks"]]:
         new_task = Task.from_dict(task)
         new_task.goal_id = goal.id
         db.session.add(new_task)
