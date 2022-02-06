@@ -44,7 +44,8 @@ def post_tasked_goals():
         difficulty=request_body["difficulty"]
     )
     db.session.add(new_goal)
-
+    db.session.commit()
+    
     new_tasks = []
     for task in request_body["tasks"]:
         new_task = Task(
