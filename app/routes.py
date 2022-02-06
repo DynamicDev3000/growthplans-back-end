@@ -37,39 +37,31 @@ def require_goal(endpoint):
 @goals_bp.route("", methods=["POST"])
 def post_tasked_goals():
     request_body = request.get_json()
-    goal = Goal.from_dict(request_body)
-    db.session.add(goal)
-    
-    # new_goal = Goal.from_dict(request_body["goal"])
-    # db.session.add(new_goal)
-
-    # if "tasks" not in request_body:
-    #     return ({
-    #     "details": "Invalid data"
-    # }), 400
-##tasks in nested goal key
-
+    new_goal = Goal(
+        title=request_body["title"],
+        due_date=request_body["due_date"],
+        why=request_body["why"],
+        difficulty=request_body["difficulty"]
+    )
+    db.session.add(new_goal)
 
     new_tasks = []
-    for task in request_body[["goal"]["tasks"]]:
-        new_task = Task.from_dict(task)
-        new_task.goal_id = goal.id
-        db.session.add(new_task)
+    for task in request_body["tasks"]:
+        new_task = Task(
+            goal_id = new_goal.id,
+            description = task["description"]
+        )
         new_tasks.append(new_task)
-
-    # for task in request_body[goal["tasks"]]:
-    #     new_task = Task.from_dict(task)
-    #     new_tasks.append(new_task)
-    
-    # new_goal.tasks = new_tasks
+        
+    new_goal.tasks = new_tasks
 
     db.session.add_all(new_tasks)
     db.session.commit()
 
     new_response = {
-    "id": goal.id,
-    "title": goal.title,
-    "tasks": [task.task_to_dict_w_goal() for task in goal.tasks]
+    "id": new_goal.id,
+    "title": new_goal.title,
+    "tasks": [task.task_to_dict_w_goal() for task in new_goal.tasks]
     }
 
     return jsonify(new_response), 200
