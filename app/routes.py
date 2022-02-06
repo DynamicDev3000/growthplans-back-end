@@ -47,9 +47,11 @@ def post_tasked_goals():
     #     return ({
     #     "details": "Invalid data"
     # }), 400
+##tasks in nested goal key
+
 
     new_tasks = []
-    for task in request_body[goal["tasks"]]:
+    for task in request_body[["goal"]["tasks"]]:
         new_task = Task.from_dict(task)
         new_task.goal_id = goal.id
         db.session.add(new_task)
