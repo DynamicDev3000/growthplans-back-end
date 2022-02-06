@@ -48,7 +48,7 @@ def post_tasked_goals():
     new_tasks = []
     for task in request_body["tasks"]:
         new_task = Task(
-            goal_id = new_goal.goal_id,
+            goal_id = new_goal.id,
             description = task["description"]
         )
         new_tasks.append(new_task)
