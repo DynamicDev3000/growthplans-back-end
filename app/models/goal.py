@@ -6,7 +6,7 @@ class Goal(db.Model):
     due_date = db.Column(db.DateTime)
     why = db.Column(db.String)
 ##big why reflection? #foreen obstacles, tools to overcome them
-    difficulty = db.Column(db.Integer)
+    difficulty = db.Column(db.Float)
     tasks = db.relationship("Task", backref="goal", lazy=True)
     goal_completed_at = db.Column(db.DateTime)
 
