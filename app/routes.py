@@ -117,6 +117,39 @@ def patch_goal(goal):
 
     return jsonify({"updated title": goal.title}), 200
 
+@goals_bp.route("/<goal_id>", methods=["PUT"])
+@require_goal
+def put_tasked_goals(goal):
+    request_body = request.get_json()
+    updated_goal = Goal.query.get(goal)(
+        title=request_body["title"],
+        due_date=request_body["due_date"],
+        why=request_body["why"],
+        difficulty=request_body["difficulty"]
+    )
+    db.session.add(updated_goal)
+    
+    updated_tasks = []
+    for task in request_body["tasks"]:
+        new_task = Task.query.get(goal.tasks)(
+            goal_id = updated_goal.id,
+            description = task["description"]
+        )
+        updated_tasks.append(new_task)
+        
+    updated_goal.tasks = updated_tasks
+
+    db.session.add_all(updated_tasks)
+    db.session.commit()
+
+    new_response = {
+    "id": updated_goal.id,
+    "title": updated_goal.title,
+    "tasks": [task.task_to_dict_w_goal() for task in updated_goal.tasks]
+    }
+
+    return jsonify(new_response), 200
+
 #patch request to edit subtasks
 #works tested with request in this format
 # {   "description" : "Youtube 3"
