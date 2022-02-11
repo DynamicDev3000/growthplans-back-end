@@ -128,10 +128,10 @@ def put_tasked_goals(goal_id):
     goal.why = request_body["why"]
     goal.difficulty = request_body["difficulty"]
 
-    db.session.add(goal.title)
-    db.session.add(goal.due_date)
-    db.session.add(goal.why)
-    db.session.add(goal.difficulty)
+    # db.session.add(goal.title)
+    # db.session.add(goal.due_date)
+    # db.session.add(goal.why)
+    # db.session.add(goal.difficulty)
     
     # updated_goal = Goal.query.get(goal)(
     #     title=request_body["title"],
