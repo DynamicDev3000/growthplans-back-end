@@ -118,7 +118,6 @@ def patch_goal(goal):
     return jsonify({"updated title": goal.title}), 200
 
 @goals_bp.route("/<goal_id>", methods=["PUT"])
-@require_goal
 def put_tasked_goals(goal_id):
 
     goal = Goal.query.get(goal_id)
