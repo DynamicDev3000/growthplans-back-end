@@ -147,7 +147,7 @@ def complete_patch(task, goal):
 
     db.session.commit()
 
-    return jsonify(goal.is_goal_completed), 200
+    return jsonify({"goal" : goal.is_goal_completed}), 200
 
 @goals_bp.route("/<goal_id>/<task_id>/mark_incomplete", methods=["PATCH"])
 @require_goal
