@@ -133,7 +133,7 @@ def patch_task(goal, task):
 
     return jsonify({"updated description": task.description}), 200
 
-@goals_bp.route("/<task_id>/mark_complete", methods=["PATCH"])
+@goals_bp.route("/<goal_id>/<task_id>/mark_complete", methods=["PATCH"])
 @require_goal
 @require_task
 def complete_patch(task, goal):
@@ -147,7 +147,7 @@ def complete_patch(task, goal):
 
     db.session.commit()
 
-    return jsonify({"goal" : goal.is_goal_completed}), 200
+    return jsonify({"goal": goal.to_dict()}), 200
 
 @goals_bp.route("/<goal_id>/<task_id>/mark_incomplete", methods=["PATCH"])
 @require_goal
