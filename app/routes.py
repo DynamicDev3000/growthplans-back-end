@@ -127,20 +127,6 @@ def put_tasked_goals(goal_id):
     goal.due_date = request_body["due_date"]
     goal.why = request_body["why"]
     goal.difficulty = request_body["difficulty"]
-
-    # db.session.add(goal.title)
-    # db.session.add(goal.due_date)
-    # db.session.add(goal.why)
-    # db.session.add(goal.difficulty)
-    
-    # updated_goal = Goal.query.get(goal)(
-    #     title=request_body["title"],
-    #     due_date=request_body["due_date"],
-    #     why=request_body["why"],
-    #     difficulty=request_body["difficulty"]
-    # )
-    # db.session.add(updated_goal)
-    # error parameters [{param1: <Goal 40>}]
     
     goal.tasks = []
     for task in request_body["tasks"]:
@@ -152,19 +138,6 @@ def put_tasked_goals(goal_id):
     
     db.session.add_all(goal.tasks)
     db.session.commit()
-
-
-    # updated_tasks = []
-    # for task in request_body["tasks"]:
-    #     new_task = Task(
-    #         goal_id = updated_goal.id,
-    #         description = task["description"]
-    #     )
-    #     updated_tasks.append(new_task)
-    # updated_goal.tasks = updated_tasks
-
-    # db.session.add_all(updated_tasks)
-    # db.session.commit()
 
     new_response = {
     "id": goal.id,

@@ -3,10 +3,10 @@ from app import db
 class Goal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String)
-    due_date = db.Column(db.DateTime)
-    why = db.Column(db.String)
+    due_date = db.Column(db.DateTime, nullable=True)
+    why = db.Column(db.String, nullable=True)
 ##big why reflection? #foreen obstacles, tools to overcome them
-    difficulty = db.Column(db.Float)
+    difficulty = db.Column(db.Float, nullable=True)
     tasks = db.relationship("Task", backref="goal", lazy=True)
     goal_completed_at = db.Column(db.DateTime)
 
