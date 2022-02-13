@@ -16,6 +16,9 @@ class Goal(db.Model):
         return {
             "id" : self.id,
             "title" : self.title,
+            "due_date" : self.due_date,
+            "why" : self.why,
+            "difficulty" : self.difficulty,
             "is_goal_completed" : self.goal_completed_at is not None
         }
 
@@ -23,6 +26,9 @@ class Goal(db.Model):
         return {
             "id" : self.id,
             "title" : self.title,
+            "due_date" : self.due_date,
+            "why" : self.why,
+            "difficulty" : self.difficulty,
             "is_goal_completed" : self.goal_completed_at is not None,
             "tasks" : [task.task_to_dict_w_goal() for task in self.tasks]
         }
