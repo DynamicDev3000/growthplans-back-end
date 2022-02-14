@@ -1,5 +1,7 @@
 from flask import current_app, jsonify
 from app import db
+from datetime import datetime 
+
 class Goal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String)
@@ -16,7 +18,7 @@ class Goal(db.Model):
         return {
             "id" : self.id,
             "title" : self.title,
-            "due_date" : self.due_date,
+            "due_date" : (datetime.now() - self.due_date).days,
             "why" : self.why,
             "difficulty" : self.difficulty,
             "is_goal_completed" : self.goal_completed_at is not None
