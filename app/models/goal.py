@@ -28,7 +28,7 @@ class Goal(db.Model):
         return {
             "id" : self.id,
             "title" : self.title,
-            "due_date" : self.due_date,
+            "due_date" : (datetime.now() - self.due_date).days,
             "why" : self.why,
             "difficulty" : self.difficulty,
             "is_goal_completed" : self.goal_completed_at is not None,
