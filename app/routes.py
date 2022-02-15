@@ -158,7 +158,7 @@ def put_tasked_goals(goal_id):
     #     goal.tasks.append(new_task)
     
     # db.session.add_all(goal.tasks)
-    # db.session.commit()
+    db.session.commit()
 
     new_response = {
     "id": goal.id,
