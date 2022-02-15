@@ -123,21 +123,42 @@ def put_tasked_goals(goal_id):
     goal = Goal.query.get(goal_id)
     request_body = request.get_json()
     
-    goal.title = request_body["title"]
-    goal.due_date = request_body["due_date"]
-    goal.why = request_body["why"]
-    goal.difficulty = request_body["difficulty"]
+    if "title" in request_body:
+        goal.title = request_body["title"]
     
-    goal.tasks = []
-    for task in request_body["tasks"]:
-        new_task = Task(
-            goal_id = goal.id,
-            description = task["description"]
-        )
-        goal.tasks.append(new_task)
+    if "due_date" in request_body:
+        goal.due_date = request_body["due_date"]
     
-    db.session.add_all(goal.tasks)
-    db.session.commit()
+    if "why" in request_body:
+        goal.why = request_body["why"]
+    
+    if "difficulty" in request_body:
+        goal.difficulty = request_body["difficulty"]
+    
+    if "tasks" in request_body:
+        for task in request_body["tasks"]:
+            if "id" in task:
+                task_id = task["id"]
+                task_to_update = Task.query.get(task_id)
+                task_to_update.description = task["description"]
+            else:
+                new_task = Task(
+                    goal_id = goal.id,
+                    description = task["description"]
+                )
+                db.session.add(new_task)
+                goal.tasks.append(new_task)
+    
+    # goal.tasks = []
+    # for task in request_body["tasks"]:
+    #     new_task = Task(
+    #         goal_id = goal.id,
+    #         description = task["description"]
+    #     )
+    #     goal.tasks.append(new_task)
+    
+    # db.session.add_all(goal.tasks)
+    # db.session.commit()
 
     new_response = {
     "id": goal.id,
