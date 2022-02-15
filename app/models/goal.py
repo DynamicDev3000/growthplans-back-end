@@ -18,9 +18,10 @@ class Goal(db.Model):
         return {
             "id" : self.id,
             "title" : self.title,
-            "due_date" : (datetime.now() - self.due_date).days,
+            "due_date" : self.due_date,
             "why" : self.why,
             "difficulty" : self.difficulty,
+            "days_left" : (datetime.now() - self.due_date).days,
             "is_goal_completed" : self.goal_completed_at is not None
         }
 
@@ -28,10 +29,11 @@ class Goal(db.Model):
         return {
             "id" : self.id,
             "title" : self.title,
-            "due_date" : (datetime.now() - self.due_date).days,
+            "due_date" : self.due_date,
             "why" : self.why,
             "difficulty" : self.difficulty,
             "is_goal_completed" : self.goal_completed_at is not None,
+            "days_left" : (datetime.now() - self.due_date).days,
             "tasks" : [task.task_to_dict_w_goal() for task in self.tasks]
         }
     @classmethod
