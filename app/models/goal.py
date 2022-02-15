@@ -18,7 +18,7 @@ class Goal(db.Model):
         return {
             "id" : self.id,
             "title" : self.title,
-            "due_date" : self.due_date,
+            "due_date" : self.due_date.strftime("%Y-%m-%d"),
             "why" : self.why,
             "difficulty" : self.difficulty,
             "days_left" : (datetime.now() - self.due_date).days,
@@ -29,7 +29,7 @@ class Goal(db.Model):
         return {
             "id" : self.id,
             "title" : self.title,
-            "due_date" : self.due_date,
+            "due_date" : self.due_date.strftime("%Y-%m-%d"),
             "why" : self.why,
             "difficulty" : self.difficulty,
             "is_goal_completed" : self.goal_completed_at is not None,
