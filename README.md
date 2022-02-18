@@ -9,8 +9,7 @@ An inspirational quote that will update on page refreshing.
 ![Screen Shot 2022-02-15 at 9 07 34 PM](https://user-images.githubusercontent.com/88695862/154183066-b78158ad-da10-4941-8aba-badb2672d05d.png)
   
 As you complete a task, click "done" and your little plant will grow!  Celebrate the small victories!
-https://user-images.githubusercontent.com/88695862/154618216-36cc782b-2d28-4ed7-a0a3-0e49d518131f.mp4
-
+![gif](https://user-images.githubusercontent.com/88695862/154618964-438136bd-8938-45ea-b5cf-87e1dc64dfa4.gif)
 
 Set, edit or remove your own goals to include a description of your goal, difficulty level, reason why you want to complete the goal, due date and subtasks.
 ![Screen Shot 2022-02-15 at 9 07 41 PM](https://user-images.githubusercontent.com/88695862/154183221-fd551e09-c05f-4689-9a2a-f9ebc6a754b9.png)
